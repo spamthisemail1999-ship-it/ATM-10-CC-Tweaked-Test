@@ -1,2 +1,5 @@
 # ATM 10 CC Tweaked Test
-Install all of these in order to connect your MineColony to AE2 and be able to push requested items
+Run the command on line 5 to get the "installer" program in CC.
+Then run the program in your game, it will install startup.lua, config.lua, and colony_manager.lua
+
+pastebin get ESFPXSqd installer (THIS IS WIP)

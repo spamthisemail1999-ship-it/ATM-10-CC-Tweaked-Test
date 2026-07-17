@@ -9,6 +9,11 @@ dofile("config.lua")
 -------------------------------------------------
 -- PERIPHERALS
 -------------------------------------------------
+local monitor = peripheral.find("monitor")
+
+local status = "Starting..."
+local lastAction = "None"
+local requestCount = 0
 
 local me =
     peripheral.wrap("me_bridge_2")
