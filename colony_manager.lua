@@ -1,24 +1,23 @@
--- Colony_Manager.lua
-
+-------------------------------------------------
+-- ATM10 MineColonies AE2 Manager
+-- Advanced Peripherals API
+-------------------------------------------------
 
 dofile("config.lua")
 
 
+-------------------------------------------------
+-- PERIPHERALS
+-------------------------------------------------
 
 local me =
-peripheral.find("meBridge")
-
+    peripheral.wrap("me_bridge_2")
 
 local colony =
-peripheral.find("colonyIntegrator")
-
+    peripheral.wrap("colony_integrator_0")
 
 local chat =
-peripheral.find("chatBox")
-
-
-local monitor =
-peripheral.find("monitor")
+    peripheral.wrap("chat_box_1")
 
 
 
@@ -33,115 +32,84 @@ end
 
 
 
-------------------------------------------------
--- DATA
-------------------------------------------------
+-------------------------------------------------
+-- VARIABLES
+-------------------------------------------------
 
 local completed = {}
-
-local failed = {}
-
-local activeCrafts = {}
 
 local delivered = 0
 
 
 
-
-------------------------------------------------
+-------------------------------------------------
 -- CHAT
-------------------------------------------------
+-------------------------------------------------
 
-local function message(text)
+local function notify(message)
 
-    print(text)
+    print(message)
 
+    if CONFIG.CHAT_ENABLED and chat then
 
-    if CONFIG.CHAT and chat then
-
-        chat.sendMessage(
-            "[AE2 Colony] "..text
-        )
+        pcall(function()
+            chat.sendMessage(
+                "[AE2 Colony] "..message
+            )
+        end)
 
     end
+end
+
+
+
+-------------------------------------------------
+-- AE2 ITEM COUNT
+-------------------------------------------------
+
+local function getStored(item)
+
+    local success,data =
+        pcall(function()
+
+            return me.getItem({
+                name=item
+            })
+
+        end)
+
+
+    if success and data then
+
+        return data.count or 0
+
+    end
+
+
+    return 0
 
 end
 
 
 
-
-------------------------------------------------
--- MONITOR
-------------------------------------------------
-
-local function display()
-
-    if not CONFIG.MONITOR then
-        return
-    end
-
-
-    if not monitor then
-        return
-    end
-
-
-    monitor.clear()
-
-
-    monitor.setCursorPos(1,1)
-
-    monitor.write(
-        "ATM10 AE2 Colony Manager"
-    )
-
-
-    monitor.setCursorPos(1,3)
-
-    monitor.write(
-        "Delivered: "..delivered
-    )
-
-
-    monitor.setCursorPos(1,4)
-
-    monitor.write(
-        "Tracked: "..#completed
-    )
-
-end
-
-
-
-
-------------------------------------------------
--- AE2 STORAGE
-------------------------------------------------
-
-local function amount(item)
-
-    local result =
-    me.getItemAmount(
-        {
-            name=item
-        })
-
-
-    return result or 0
-
-end
-
-
-
-
-------------------------------------------------
--- CRAFTING
-------------------------------------------------
+-------------------------------------------------
+-- CRAFT
+-------------------------------------------------
 
 local function craft(item,count)
 
 
-    if CONFIG.BLACKLIST[item] then
+    local craftable =
+        me.isCraftable({
+            name=item
+        })
+
+
+    if not craftable then
+
+        notify(
+            "Cannot craft "..item
+        )
 
         return false
 
@@ -149,66 +117,104 @@ local function craft(item,count)
 
 
 
-    if activeCrafts[item] then
-
-        return false
-
-    end
-
-
-
-    activeCrafts[item]=true
-
-
-
-    message(
+    notify(
         "Crafting "..item.." x"..count
     )
 
 
 
-    local success =
-    me.craftItem(
-        {
-            name=item,
-            count=count
-        })
+    local success,result =
+        pcall(function()
+
+            return me.craftItem(
+                {
+                    name=item,
+                    count=count
+                })
+
+        end)
 
 
 
-    sleep(CONFIG.CRAFT_DELAY)
-
-
-    activeCrafts[item]=nil
-
-
-
-    return success
+    return success and result
 
 end
 
 
 
 
-
-------------------------------------------------
+-------------------------------------------------
 -- EXPORT
-------------------------------------------------
+-------------------------------------------------
 
 local function export(item,count)
 
 
+    local moved =
+        me.exportItem(
+            {
+                name=item
+            },
+            CONFIG.EXPORT_SIDE,
+            count
+        )
+
+
+    return moved > 0
+
+end
+
+
+
+
+-------------------------------------------------
+-- HANDLE REQUEST
+-------------------------------------------------
+
+local function processRequest(request)
+
+
+    if not request.item then
+        return
+    end
+
+
+    local item =
+        request.item.name
+
+
+    local amount =
+        request.count
+
+
+
+    local id =
+        item..":"..amount
+
+
+
+    if completed[id] then
+        return
+    end
+
+
+
+    notify(
+        "Request "..item.." x"..amount
+    )
+
+
 
     local stored =
-    amount(item)
+        getStored(item)
 
 
 
-    if stored < count then
+    if stored < amount then
 
 
         local missing =
-        count-stored
+            amount - stored
 
 
         craft(
@@ -224,152 +230,47 @@ local function export(item,count)
 
 
 
-    local result =
-    me.exportItem(
-        {
-            name=item
-        },
-        count,
-        CONFIG.EXPORT_SIDE
-    )
-
-
-    return result
-
-end
+    local success =
+        export(
+            item,
+            amount
+        )
 
 
 
-
-
-------------------------------------------------
--- STOCK CHECK
-------------------------------------------------
-
-local function maintainStock()
-
-
-    for item,target in pairs(CONFIG.STOCK) do
-
-
-        local current =
-        amount(item)
-
-
-
-        if current < target then
-
-
-            local missing =
-            target-current
-
-
-
-            message(
-                "Restocking "..item..
-                " +"..missing
-            )
-
-
-            craft(
-                item,
-                missing
-            )
-
-
-        end
-
-    end
-
-end
-
-
-
-
-
-------------------------------------------------
--- REQUEST HANDLER
-------------------------------------------------
-
-local function process(request)
-
-
-
-    local item =
-    request.item.name
-
-
-    local count =
-    request.count
-
-
-
-    local id =
-    item..":"..count
-
-
-
-
-    if completed[id] then
-
-        return
-
-    end
-
-
-
-
-    message(
-        "Request "..item..
-        " x"..count
-    )
-
-
-
-
-    if export(item,count) then
+    if success then
 
 
         completed[id]=true
 
-
         delivered =
-        delivered+1
+            delivered + 1
 
 
-
-        message(
+        notify(
             "Delivered "..item
         )
 
 
     else
 
-
-        failed[id]=true
-
-
-        message(
-            "FAILED "..item
+        notify(
+            "Failed delivery "..item
         )
 
-
     end
-
 
 end
 
 
 
 
-
-------------------------------------------------
+-------------------------------------------------
 -- MAIN LOOP
-------------------------------------------------
+-------------------------------------------------
 
-
-message(
-    "Controller started"
+notify(
+    "Colony manager online"
 )
 
 
@@ -377,49 +278,56 @@ message(
 while true do
 
 
-
     local success,requests =
-    pcall(
-        colony.getRequests
-    )
+        pcall(function()
+
+            return colony.getRequests()
+
+        end)
 
 
 
-    if success then
+    if success and requests then
+
+
+        local processed = 0
+
 
 
         for _,request in pairs(requests) do
 
 
-            process(request)
+            processRequest(request)
 
+
+            processed =
+                processed + 1
+
+
+
+            -- force ComputerCraft yield
+            sleep(0)
+
+
+
+            if processed >= CONFIG.MAX_REQUESTS_PER_CYCLE then
+                break
+            end
 
         end
 
-
     else
 
-
-        message(
-            "Colony scan failed"
+        notify(
+            "Failed reading colony requests"
         )
 
     end
 
 
 
-
-    maintainStock()
-
-
-
-    display()
-
-
-
     sleep(
         CONFIG.CHECK_INTERVAL
     )
-
 
 end
