@@ -2,18 +2,19 @@
 
 local files = {
     {
-        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/startup.lua",
+        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/main/startup.lua",
         name = "startup.lua"
     },
     {
-        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/config.lua",
+        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/main/config.lua",
         name = "config.lua"
     },
     {
-        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/colony_manager.lua",
+        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/main/colony_manager.lua",
         name = "colony_manager.lua"
     }
 }
+
 
 for _, file in ipairs(files) do
     print("Downloading " .. file.name .. "...")
