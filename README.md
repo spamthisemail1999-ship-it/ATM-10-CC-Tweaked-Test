@@ -2,15 +2,15 @@
 
 local files = {
     {
-        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/startup.lua?token=GHSAT0AAAAAAEDCS4UT2PAON2CWYZAGPURG2S2W6RA",
+        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/startup.lua",
         name = "startup.lua"
     },
     {
-        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/config.lua?token=GHSAT0AAAAAAEDCS4UTQXJ2UCE53NPL3Q6K2S2W6TQ",
+        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/config.lua",
         name = "config.lua"
     },
     {
-        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/colony_manager.lua?token=GHSAT0AAAAAAEDCS4USUZP3RG735ZWNSAEE2S2W6VA",
+        url = "https://raw.githubusercontent.com/spamthisemail1999-ship-it/ATM-10-CC-Tweaked-Test/refs/heads/main/colony_manager.lua",
         name = "colony_manager.lua"
     }
 }
