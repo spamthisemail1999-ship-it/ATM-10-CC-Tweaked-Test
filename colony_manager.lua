@@ -300,6 +300,7 @@ local function processRequest(request)
 
     local stored =
         getStored(item)
+        print("AE2 has "..stored.." of "..item)
 
 
 
@@ -324,6 +325,8 @@ local function processRequest(request)
 
 
     if export(item,amount) then
+        
+        print("Exporting "..item.." x"..amount)
 
 
         delivered =
