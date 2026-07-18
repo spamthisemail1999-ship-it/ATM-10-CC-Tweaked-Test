@@ -164,22 +164,28 @@ end
 
 local function getStored(item)
 
+    print("Checking AE2 for:", item)
 
     local success,data =
         pcall(function()
-
             return me.getItem({
                 name=item
             })
-
         end)
 
 
+    print("API success:", success)
+
+
+    if data then
+        print("AE2 count:", data.count)
+    else
+        print("AE2 returned nil")
+    end
+
 
     if success and data then
-
         return data.count or 0
-
     end
 
 
@@ -315,6 +321,8 @@ local function processRequest(request)
 
 
     local stored =
+        print("DEBUG ITEM:", item)
+        print("DEBUG STORED:", stored)
         getStored(item)
         print("AE2 has "..stored.." of "..item)
 
