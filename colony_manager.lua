@@ -389,14 +389,10 @@ while true do
 
 
 
-        for _,request in pairs(requests) do
+        local request = requests[1]
 
-
+        if request then
             processRequest(request)
-
-
-            sleep(0)
-
         end
 
 
