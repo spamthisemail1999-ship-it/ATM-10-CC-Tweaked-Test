@@ -264,30 +264,16 @@ end
 
 local function processRequest(request)
 
-
-    print(
-        textutils.serialize(request)
-    )
-
-
-
-    local item =
-        request.name
-
-
-
-    if not item then
-
-        print("No item name found")
-
+    if not request.items or not request.items[1] then
+        print("Request has no item list")
         return
-
     end
 
+    local item = request.items[1].name
+    local amount = request.items[1].count or request.count or 1
 
-
-    local amount =
-        request.count or 1
+    print("Registry:", item)
+    print("Amount:", amount)
 
 
 
