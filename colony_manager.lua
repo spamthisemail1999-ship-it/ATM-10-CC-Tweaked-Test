@@ -277,14 +277,14 @@ end
 local function processRequest(request)
 
 
-    if not request.item then
+    if not request.name then
         return
     end
 
 
 
     local item =
-        request.item.name
+        request.name
 
 
     local amount =
