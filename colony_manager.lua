@@ -251,19 +251,35 @@ end
 
 local function export(item,count)
 
+    local success,moved =
+        pcall(function()
 
-    local moved =
-        me.exportItem(
-            {
-                name=item
-            },
-            CONFIG.EXPORT_SIDE,
-            count
-        )
+            return me.exportItem(
+                {
+                    name=item
+                },
+                CONFIG.EXPORT_SIDE,
+                count
+            )
+
+        end)
 
 
+    if not success then
 
-    return moved > 0
+        print("Export error: "..tostring(moved))
+
+        return false
+
+    end
+
+
+    print(
+        "Export moved "..tostring(moved)
+    )
+
+
+    return moved and moved > 0
 
 end
 
@@ -324,31 +340,27 @@ local function processRequest(request)
 
 
 
-    if export(item,amount) then
-        
-        print("Exporting "..item.." x"..amount)
+        local success =
+            export(item,amount)
 
 
-        delivered =
-            delivered + 1
+        if success then
 
+            delivered =
+                delivered + 1
 
-        notify(
-            "Delivered "..item
-        )
+            notify(
+                "Exported "..item
+            )
 
+        else
 
-    else
+            errors =
+                errors + 1
 
-
-        errors =
-            errors + 1
-
-
-        notify(
-            "Failed "..item
-        )
-
+            notify(
+                "Failed "..item
+            )
 
     end
 
