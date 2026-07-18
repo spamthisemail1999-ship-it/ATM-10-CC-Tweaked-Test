@@ -297,22 +297,30 @@ end
 -------------------------------------------------
 
 local function processRequest(request)
-
-
-    if not request.name then
-        return
-    end
-
-
+    print(textutils.serialize(request))
 
     local item =
         request.name
 
 
+    if request.item and request.item.name then
+
+        item = request.item.name
+
+    elseif request.name then
+
+        item = request.name
+
+    end
+
+
+    if not item then
+        return
+    end
+
+
     local amount =
         request.count
-
-
 
     notify(
         "Processing "..item.." x"..amount
