@@ -1,6 +1,4 @@
--- Monster Spawner Toggle Panel
--- Each button is green when ON and red when OFF.
--- This version keeps the logic simple for ComputerCraft compatibility.
+--Mob Spawner Control Program
 
 local SPAWNER_COUNT = 30
 local SIDES = { "back", "left", "right", "front", "top", "bottom" }
