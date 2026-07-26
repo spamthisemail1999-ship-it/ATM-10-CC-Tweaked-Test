@@ -3,6 +3,7 @@
 local spawnerCount = 30
 local sides = { "back", "left", "right", "front", "top", "bottom" }
 local states = {}
+local names = dofile("mob_names.lua")
 
 local function setOutput(index, state)
   local side = sides[(index % 6) + 1]
@@ -78,7 +79,7 @@ local function drawScreen(monitor)
         local x = startX + col * (buttonW + gapX)
         local y = startY + row * (buttonH + gapY)
         if y + buttonH - 1 <= height then
-          local label = tostring(idx)
+          local label = names[idx] or tostring(idx)
           if #label < 2 then
             label = "0" .. label
           end
