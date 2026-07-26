@@ -47,27 +47,37 @@ local function drawScreen(monitor)
   monitor.setTextColor(colors.gray)
   monitor.write("Green = ON   Red = OFF")
 
+  local width, height = monitor.getSize()
   local buttons = {}
   local idx = 1
   local startX = 2
   local startY = 4
-  local buttonW = 7
+  local buttonW = math.max(3, math.floor((width - 2 - 5) / 6))
   local buttonH = 3
   local gapX = 1
   local gapY = 1
 
-  for row = 0, 4 do
-    for col = 0, 5 do
+  local cols = math.max(1, math.min(6, math.floor((width - startX + gapX) / (buttonW + gapX))))
+  local rows = math.max(1, math.ceil(spawnerCount / cols))
+
+  if height < 10 then
+    buttonH = 1
+  end
+
+  for row = 0, rows - 1 do
+    for col = 0, cols - 1 do
       if idx <= spawnerCount then
         local x = startX + col * (buttonW + gapX)
         local y = startY + row * (buttonH + gapY)
-        local label = tostring(idx)
-        if #label < 2 then
-          label = "0" .. label
+        if y + buttonH - 1 <= height then
+          local label = tostring(idx)
+          if #label < 2 then
+            label = "0" .. label
+          end
+          buttons[idx] = { x = x, y = y, w = buttonW, h = buttonH, label = label }
+          drawButton(monitor, buttons[idx], states[idx])
+          idx = idx + 1
         end
-        buttons[idx] = { x = x, y = y, w = buttonW, h = buttonH, label = label }
-        drawButton(monitor, buttons[idx], states[idx])
-        idx = idx + 1
       end
     end
   end
