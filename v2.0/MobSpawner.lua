@@ -26,12 +26,14 @@ local function drawButton(monitor, btn, on)
   end
   monitor.setTextColor(colors.white)
 
-  for y = btn.y, btn.y + 2 do
+  for y = btn.y, btn.y + btn.h - 1 do
     monitor.setCursorPos(btn.x, y)
     monitor.write(string.rep(" ", btn.w))
   end
 
-  monitor.setCursorPos(btn.x + 1, btn.y + 1)
+  local textY = btn.y + math.floor(btn.h / 2)
+  local textX = btn.x + math.max(1, math.floor((btn.w - #btn.label) / 2))
+  monitor.setCursorPos(textX, textY)
   monitor.write(btn.label)
 end
 
