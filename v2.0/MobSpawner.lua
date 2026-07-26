@@ -66,6 +66,12 @@ local function drawScreen(monitor)
     buttonH = 1
   end
 
+  local availableHeight = math.max(1, height - startY)
+  local maxRows = math.max(1, math.floor((availableHeight + gapY) / (buttonH + gapY)))
+  if maxRows < rows then
+    rows = maxRows
+  end
+
   for row = 0, rows - 1 do
     for col = 0, cols - 1 do
       if idx <= spawnerCount then
