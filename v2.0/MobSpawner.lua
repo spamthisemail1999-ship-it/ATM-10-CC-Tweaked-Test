@@ -4,10 +4,28 @@ local spawnerCount = 30
 local sides = { "back", "left", "right", "front", "top", "bottom" }
 local states = {}
 local names = dofile("mob_names.lua")
+local modemSide = "right"
+local channel = 1000
+
+local function initModem()
+  if peripheral.isPresent(modemSide) and peripheral.getType(modemSide) == "modem" then
+    rednet.open(modemSide)
+    return true
+  end
+  return false
+end
+
+local function sendSpawner(index, state)
+  if not initModem() then
+    return
+  end
+  rednet.send(channel + index, { spawner = index, state = state })
+end
 
 local function setOutput(index, state)
   local side = sides[(index % 6) + 1]
   redstone.setOutput(side, state)
+  sendSpawner(index, state)
 end
 
 local function toggleSpawner(index)
