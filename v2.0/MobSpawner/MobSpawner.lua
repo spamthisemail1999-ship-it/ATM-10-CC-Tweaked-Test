@@ -1,31 +1,24 @@
 -- Mob Spawner Control Program
 
 local spawnerCount = 30
-local sides = { "back", "left", "right", "front", "top", "bottom" }
+local outputSide = "back"
 local states = {}
 local names = dofile("mob_names.lua")
-local modemSide = "right"
-local channel = 1000
-
-local function initModem()
-  if peripheral.isPresent(modemSide) and peripheral.getType(modemSide) == "modem" then
-    rednet.open(modemSide)
-    return true
-  end
-  return false
-end
-
-local function sendSpawner(index, state)
-  if not initModem() then
-    return
-  end
-  rednet.send(channel + index, { spawner = index, state = state })
-end
 
 local function setOutput(index, state)
-  local side = sides[(index % 6) + 1]
-  redstone.setOutput(side, state)
-  sendSpawner(index, state)
+  local bit = 1 << (index - 1)
+  local current = 0
+  if redstone then
+    current = redstone.getBundledOutput(outputSide)
+  end
+
+  if state then
+    current = current + bit
+  else
+    current = current - bit
+  end
+
+  redstone.setBundledOutput(outputSide, current)
 end
 
 local function toggleSpawner(index)
@@ -39,7 +32,7 @@ end
 
 local function drawButton(monitor, btn, on)
   if on then
-    monitor.setBackgroundColor(colors.black)
+    monitor.setBackgroundColor(colors.green)
   else
     monitor.setBackgroundColor(colors.red)
   end
