@@ -39,7 +39,7 @@ end
 
 local function drawButton(monitor, btn, on)
   if on then
-    monitor.setBackgroundColor(colors.green)
+    monitor.setBackgroundColor(colors.black)
   else
     monitor.setBackgroundColor(colors.red)
   end
