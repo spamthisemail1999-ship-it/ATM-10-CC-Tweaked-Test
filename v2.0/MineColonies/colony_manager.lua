@@ -605,9 +605,18 @@ local function parseRequest(request)
 
 
     local count =
-        request.items[1].count
-        or request.count
+        tonumber(request.count)
+        or tonumber(request.items[1].count)
+        or tonumber(request.items[1].amount)
         or 1
+
+
+
+    if count < 1 then
+
+        count = 1
+
+    end
 
 
 
@@ -987,60 +996,127 @@ local function exportItem(item,count)
         "Exporting "
         ..
         item
+        ..
+        " x"
+        ..
+        tostring(count)
     )
 
 
 
-    local success,moved =
-        pcall(function()
+    local requestedCount =
+        tonumber(count)
+        or 0
 
 
-            return
-            PERIPHERALS.me.exportItem(
-                {
-                    name = item
-                },
-                CONFIG.EXPORT_SIDE,
-                count
+
+    if requestedCount <= 0 then
+
+        return false,0
+
+    end
+
+
+
+    local totalMoved = 0
+    local remaining = requestedCount
+
+
+
+    while remaining > 0 do
+
+
+        local batchSize =
+            math.min(
+                remaining,
+                64
             )
 
 
-        end)
+
+        local success,moved =
+            pcall(function()
+
+
+                return
+                PERIPHERALS.me.exportItem(
+                    {
+                        name = item
+                    },
+                    CONFIG.EXPORT_SIDE,
+                    batchSize
+                )
+
+
+            end)
 
 
 
-    if not success then
+        if not success then
 
 
-        log(
-            "Export error: "
-            ..
-            tostring(moved)
-        )
+            log(
+                "Export error: "
+                ..
+                tostring(moved)
+            )
 
 
-        return false,0
+            return false,totalMoved
+
+
+        end
+
+
+
+        moved =
+            moved or 0
+
+
+
+        if moved <= 0 then
+
+            break
+
+        end
+
+
+
+        totalMoved =
+            totalMoved
+            +
+            moved
+
+
+
+        remaining =
+            remaining
+            -
+            moved
+
+
+
+        if moved < batchSize then
+
+            break
+
+        end
 
 
     end
 
 
 
-    moved =
-        moved or 0
-
-
-
     STATE.itemsExported =
         STATE.itemsExported
         +
-        moved
+        totalMoved
 
 
 
     return
-        moved > 0,
-        moved
+        totalMoved > 0,
+        totalMoved
 
 
 end
